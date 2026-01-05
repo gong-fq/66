@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>英语语法AI助教 - 龚凤乾老师</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@400;600;700&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        /* 保留您原有的所有精美样式 */
+        :root {
+            --primary: #2c5282; --primary-light: #4a90c7; --accent: #e07a5f;
+            --bg-light: #f8f9fa; --bg-white: #ffffff; --text-dark: #1a202c;
+            --text-medium: #4a5568; --text-light: #718096; --border: #e2e8f0;
+            --shadow-sm: 0 2px 8px rgba(0,0,0,0.08); --shadow-md: 0 4px 16px rgba(0,0,0,0.12);
+            --shadow-lg: 0 8px 32px rgba(0,0,0,0.15);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Noto Sans SC', 'Crimson Pro', serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; padding: 20px; color: var(--text-dark); }
+        .container { max-width: 900px; margin: 0 auto; background: var(--bg-white); border-radius: 24px; box-shadow: var(--shadow-lg); overflow: hidden; animation: slideUp 0.6s ease-out; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        .header { background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%); color: white; padding: 32px; text-align: center; position: relative; overflow: hidden; }
+        .header h1 { font-family: 'Crimson Pro', serif; font-size: 2.2em; font-weight: 700; margin-bottom: 8px; position: relative; z-index: 1; }
+        .header p { font-size: 1em; opacity: 0.95; position: relative; z-index: 1; }
+        .tabs { display: flex; background: var(--bg-light); border-bottom: 2px solid var(--border); }
+        .tab { flex: 1; padding: 18px; background: none; border: none; font-size: 1em; font-weight: 500; color: var(--text-medium); cursor: pointer; transition: all 0.3s; }
+        .tab.active { color: var(--primary); background: var(--bg-white); position: relative; }
+        .tab.active::after { content: ''; position: absolute; bottom: -2px; left: 0; right: 0; height: 2px; background: var(--primary); }
+        .content { padding: 32px; }
+        .input-section { display: none; }
+        .input-section.active { display: block; animation: fadeIn 0.4s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        textarea { width: 100%; padding: 16px; border: 2px solid var(--border); border-radius: 12px; font-size: 1em; min-height: 120px; transition: 0.3s; }
+        textarea:focus { outline: none; border-color: var(--primary); }
+        .quick-tags { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 12px; }
+        .quick-tag { padding: 8px 16px; background: var(--bg-light); border: 1px solid var(--border); border-radius: 20px; font-size: 0.9em; cursor: pointer; transition: 0.3s; }
+        .quick-tag:hover { background: var(--primary); color: white; }
+        .chat-container { border: 2px solid var(--border); border-radius: 12px; max-height: 500px; overflow-y: auto; padding: 20px; margin-bottom: 24px; background: var(--bg-light); }
+        .message { margin-bottom: 20px; }
+        .message-content { background: white; padding: 16px; border-radius: 12px; line-height: 1.7; box-shadow: var(--shadow-sm); }
+        .user-message .message-content { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
+        .btn { padding: 14px 24px; border: none; border-radius: 10px; font-weight: 600; cursor: pointer; transition: 0.3s; }
+        .btn-primary { background: var(--primary); color: white; width: 100%; margin-top: 10px; }
+        .voice-section { text-align: center; padding: 30px; }
+        .voice-button { width: 100px; height: 100px; border-radius: 50%; background: var(--accent); border: none; cursor: pointer; }
+        .voice-button.active { animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎓 英语语法AI助教</h1>
+            <p>龚凤乾老师的智能学习平台 | 专业·精准·高效</p>
+        </div>
+
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('text')">💬 文字交流</button>
+            <button class="tab" onclick="switchTab('voice')">🎤 语音对话</button>
+        </div>
+
+        <div class="content">
+            <div id="textSection" class="input-section active">
+                <textarea id="textInput" placeholder="输入语法问题，例如：请解释虚拟语气..."></textarea>
+                <div class="quick-tags">
+                    <span class="quick-tag" onclick="insertText('请分析这个句子的语法结构')">句子分析</span>
+                    <span class="quick-tag" onclick="insertText('请纠正这个句子的语法错误')">语法纠错</span>
+                </div>
+                <div class="chat-container" id="chatContainer"></div>
+                <button class="btn btn-primary" onclick="sendMessage()" id="sendBtn">📤 发送问题</button>
+            </div>
+
+            <div id="voiceSection" class="input-section">
+                <div class="voice-section">
+                    <button class="voice-button" id="voiceBtn" onclick="toggleVoiceRecording()">🎤</button>
+                    <div id="voiceStatus" style="margin-top:10px;">点击麦克风开始录音</div>
+                </div>
+                <div class="chat-container" id="voiceChatContainer"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let conversationHistory = [];
+        let recognition = null;
+        let isRecording = false;
+
+        // 初始化语音
+        if ('webkitSpeechRecognition' icn window) {
+            recognition = new webkitSpeechRecognition();
+            recognition.lang = 'zh-CN';
+            recognition.onresult = (e) => sendVoiceMessage(e.results[0][0].transcript);
+            recognition.onend = () => { isRecording = false; document.getElementById('voiceBtn').classList.remove('active'); };
+        }
+
+        function switchTab(tab) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.input-section').forEach(s => s.classList.remove('active'));
+            event.target.classList.add('active');
+            document.getElementById(tab + 'Section').classList.add('active');
+        }
+
+        function insertText(text) { document.getElementById('textInput').value = text; }
+
+        async function sendMessage() {
+            const input = document.getElementById('textInput');
+            const msg = input.value.trim();
+            if (!msg) return;
+
+            addMessage('user', msg, 'chatContainer');
+            input.value = '';
+            conversationHistory.push({ role: 'user', content: msg });
+
+            try {
+                const response = await callDeepSeekAPI(conversationHistory);
+                addMessage('ai', response, 'chatContainer');
+                conversationHistory.push({ role: 'assistant', content: response });
+            } catch (e) {
+                addMessage('ai', '抱歉，连接失败。错误：' + e.message, 'chatContainer');
+            }
+        }
+
+        async function sendVoiceMessage(msg) {
+            addMessage('user', msg, 'voiceChatContainer');
+            try {
+                const res = await callDeepSeekAPI([{ role: 'user', content: msg }]);
+                addMessage('ai', res, 'voiceChatContainer');
+                const utter = new SpeechSynthesisUtterance(res);
+                window.speechSynthesis.speak(utter);
+            } catch (e) { addMessage('ai', '语音处理失败', 'voiceChatContainer'); }
+        }
+
+        // 核心生产环境调用函数
+        async function callDeepSeekAPI(messages) {
+            const systemPrompt = "你是龚凤乾老师的AI助教，英语语法专家。请用专业、亲切的语气回答问题。";
+            
+            // 注意：这里必须请求 /api/ 路径，由 netlify.toml 转发到 functions
+            ('/api/deepseek-proxy', {
+                method: 'POST',const response = await fetch('/.netlify/functions/deepseek-proxy', { ... });
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    messages: [{ role: 'system', content: systemPrompt }, ...messages]
+                })
+            });
+
+            if (!response.ok) throw new Error('生产服务器响应异常');
+            const data = await response.json();
+            return data.choices[0].message.content;
+        }
+
+        function addMessage(role, text, containerId) {
+            const container = document.getElementById(containerId);
+            const div = document.createElement('div');
+            div.className = `message ${role}-message`;
+            div.innerHTML = `<div class="message-content"><strong>${role==='user'?'学生':'龚老师助教'}:</strong><br>${text.replace(/\n/g,'<br>')}</div>`;
+            container.appendChild(div);
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function toggleVoiceRecording() {
+            if (!recognition) return alert('浏览器不支持语音');
+            if (isRecording) { recognition.stop(); } 
+            else { 
+                isRecording = true; 
+                document.getElementById('voiceBtn').classList.add('active');
+                recognition.start(); 
+            }
+        }
+
+        window.onload = () => addMessage('ai', '你好！我是龚凤乾老师的AI助教。请随时向我提问。', 'chatContainer');
+    </script>
+</body>
+</html>

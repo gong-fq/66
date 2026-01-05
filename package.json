@@ -1,0 +1,16 @@
+{
+  "name": "english-grammar-ai-tutor",
+  "version": "1.0.0",
+  "description": "英语语法AI助教 - 龚凤乾老师的智能学习平台",
+  "main": "index.html",
+  "scripts": {
+    "dev": "netlify dev",
+    "build": "echo 'Build complete'"
+  },
+  "dependencies": {
+    "node-fetch": "^2.6.7"
+  },
+  "devDependencies": {
+    "netlify-cli": "^15.0.0"
+  }
+}
